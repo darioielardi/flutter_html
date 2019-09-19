@@ -3,8 +3,17 @@ library flutter_html;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/rich_text_parser.dart';
+import 'package:html/dom.dart';
 
 import 'image_properties.dart';
+
+typedef TextStyle LinkStyleGetter(Node link);
+
+const DEFAULT_LINK_STYLE = const TextStyle(
+  decoration: TextDecoration.underline,
+  color: Colors.blueAccent,
+  decorationColor: Colors.blueAccent,
+);
 
 class Html extends StatelessWidget {
   Html({
@@ -22,10 +31,7 @@ class Html extends StatelessWidget {
     this.blockSpacing = 14.0,
     this.useRichText = true,
     this.onImageError,
-    this.linkStyle = const TextStyle(
-        decoration: TextDecoration.underline,
-        color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent),
+    this.getLinkStyle,
     this.shrinkToFit = false,
     this.imageProperties,
     this.onImageTap,
@@ -41,7 +47,7 @@ class Html extends StatelessWidget {
   final double blockSpacing;
   final bool useRichText;
   final ImageErrorListener onImageError;
-  final TextStyle linkStyle;
+  final LinkStyleGetter getLinkStyle;
   final bool shrinkToFit;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
@@ -76,7 +82,7 @@ class Html extends StatelessWidget {
                 customTextAlign: customTextAlign,
                 html: data,
                 onImageError: onImageError,
-                linkStyle: linkStyle,
+                getLinkStyle: getLinkStyle,
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
@@ -89,7 +95,7 @@ class Html extends StatelessWidget {
                 html: data,
                 blockSpacing: blockSpacing,
                 onImageError: onImageError,
-                linkStyle: linkStyle,
+                getLinkStyle: getLinkStyle,
                 showImages: showImages,
               ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/rich_text_parser.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
@@ -14,10 +15,7 @@ class HtmlOldParser extends StatelessWidget {
     this.blockSpacing,
     this.html,
     this.onImageError,
-    this.linkStyle = const TextStyle(
-        decoration: TextDecoration.underline,
-        color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent),
+    this.getLinkStyle,
     this.showImages = true,
   });
 
@@ -28,7 +26,7 @@ class HtmlOldParser extends StatelessWidget {
   final double blockSpacing;
   final String html;
   final ImageErrorListener onImageError;
-  final TextStyle linkStyle;
+  final LinkStyleGetter getLinkStyle;
   final bool showImages;
 
   static const _supportedElements = [
@@ -131,8 +129,7 @@ class HtmlOldParser extends StatelessWidget {
 
   Widget _parseNode(dom.Node node) {
     if (customRender != null) {
-      final Widget customWidget =
-          customRender(node, _parseNodeList(node.nodes));
+      final Widget customWidget = customRender(node, _parseNodeList(node.nodes));
       if (customWidget != null) {
         return customWidget;
       }
@@ -150,7 +147,7 @@ class HtmlOldParser extends StatelessWidget {
                 child: Wrap(
                   children: _parseNodeList(node.nodes),
                 ),
-                style: linkStyle,
+                style: getLinkStyle?.call(node) ?? DEFAULT_LINK_STYLE,
               ),
               onTap: () {
                 if (node.attributes.containsKey('href') && onLinkTap != null) {
@@ -222,9 +219,8 @@ class HtmlOldParser extends StatelessWidget {
               child: Wrap(
                 children: _parseNodeList(node.nodes),
               ),
-              textDirection: node.attributes["dir"] == "rtl"
-                  ? TextDirection.rtl
-                  : TextDirection.ltr,
+              textDirection:
+                  node.attributes["dir"] == "rtl" ? TextDirection.rtl : TextDirection.ltr,
             );
           }
           //Direction attribute is required, just render the text normally now.
@@ -242,8 +238,7 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "blockquote":
           return Padding(
-            padding:
-                EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
+            padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
             child: Container(
               width: width,
               child: Wrap(
@@ -366,8 +361,7 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "figure":
           return Padding(
-              padding:
-                  EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
+              padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -498,13 +492,12 @@ class HtmlOldParser extends StatelessWidget {
                   if (node.attributes['src'].startsWith("data:image") &&
                       node.attributes['src'].contains("base64,")) {
                     precacheImage(
-                      MemoryImage(base64.decode(
-                          node.attributes['src'].split("base64,")[1].trim())),
+                      MemoryImage(base64.decode(node.attributes['src'].split("base64,")[1].trim())),
                       context,
                       onError: onImageError,
                     );
-                    return Image.memory(base64.decode(
-                        node.attributes['src'].split("base64,")[1].trim()));
+                    return Image.memory(
+                        base64.decode(node.attributes['src'].split("base64,")[1].trim()));
                   }
                   precacheImage(
                     NetworkImage(node.attributes['src']),
@@ -516,8 +509,7 @@ class HtmlOldParser extends StatelessWidget {
                   //Temp fix for https://github.com/flutter/flutter/issues/736
                   if (node.attributes['alt'].endsWith(" ")) {
                     return Container(
-                        padding: EdgeInsets.only(right: 2.0),
-                        child: Text(node.attributes['alt']));
+                        padding: EdgeInsets.only(right: 2.0), child: Text(node.attributes['alt']));
                   } else {
                     return Text(node.attributes['alt']);
                   }
@@ -739,9 +731,8 @@ class HtmlOldParser extends StatelessWidget {
             painter = new TextPainter(
                 text: new TextSpan(
                   text: node.text,
-                  style: parentStyle.merge(TextStyle(
-                      fontSize:
-                          parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR)),
+                  style: parentStyle.merge(
+                      TextStyle(fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR)),
                 ),
                 textDirection: TextDirection.ltr);
             painter.layout();
@@ -772,8 +763,7 @@ class HtmlOldParser extends StatelessWidget {
                           top: node.localName == "sub" ? null : 0,
                         ),
                         style: TextStyle(
-                            fontSize: parentStyle.fontSize *
-                                OFFSET_TAGS_FONT_SIZE_FACTOR),
+                            fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR),
                       )
                     ],
                   )
@@ -888,8 +878,7 @@ class HtmlOldParser extends StatelessWidget {
       String finalText = trimStringHtml(node.text);
       //Temp fix for https://github.com/flutter/flutter/issues/736
       if (finalText.endsWith(" ")) {
-        return Container(
-            padding: EdgeInsets.only(right: 2.0), child: Text(finalText));
+        return Container(padding: EdgeInsets.only(right: 2.0), child: Text(finalText));
       } else {
         return Text(finalText);
       }

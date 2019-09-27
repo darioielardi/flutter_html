@@ -439,7 +439,7 @@ class HtmlRichTextParser extends StatelessWidget {
         parseContext.parentElement.children.add(LinkTextSpan(
           style: parseContext.parentElement.style.merge(parseContext.childStyle),
           url: parseContext.parentElement.url,
-          text: finalText + (getLinkSuffix?.call(node) ?? ''),
+          text: finalText + (getLinkSuffix?.call(parseContext.parentElement.url) ?? ''),
           onLinkTap: onLinkTap,
         ));
 

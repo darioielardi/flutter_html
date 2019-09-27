@@ -8,7 +8,7 @@ import 'package:html/dom.dart';
 import 'image_properties.dart';
 
 typedef TextStyle LinkStyleGetter(Node link);
-typedef String LinkSuffixGetter(Node link);
+typedef String LinkSuffixGetter(String url);
 
 const DEFAULT_LINK_STYLE = const TextStyle(
   decoration: TextDecoration.underline,

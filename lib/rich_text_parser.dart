@@ -36,9 +36,13 @@ class LinkTextSpan extends TextSpan {
   // stateful widget that then hands the recognizer to the TextSpan.
   final String url;
 
-  LinkTextSpan(
-      {TextStyle style, this.url, String text, OnLinkTap onLinkTap, List<TextSpan> children})
-      : super(
+  LinkTextSpan({
+    TextStyle style,
+    this.url,
+    String text,
+    OnLinkTap onLinkTap,
+    List<TextSpan> children,
+  }) : super(
           style: style,
           text: text,
           children: children ?? <TextSpan>[],
@@ -155,6 +159,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.customTextAlign,
     this.onImageError,
     this.getLinkStyle,
+    this.getLinkSuffix,
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
@@ -171,6 +176,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final CustomTextAlign customTextAlign;
   final ImageErrorListener onImageError;
   final LinkStyleGetter getLinkStyle;
+  final LinkSuffixGetter getLinkSuffix;
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
@@ -433,7 +439,7 @@ class HtmlRichTextParser extends StatelessWidget {
         parseContext.parentElement.children.add(LinkTextSpan(
           style: parseContext.parentElement.style.merge(parseContext.childStyle),
           url: parseContext.parentElement.url,
-          text: finalText,
+          text: finalText + (getLinkSuffix?.call(node) ?? ''),
           onLinkTap: onLinkTap,
         ));
 

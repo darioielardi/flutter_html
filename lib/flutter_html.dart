@@ -8,6 +8,7 @@ import 'package:html/dom.dart';
 import 'image_properties.dart';
 
 typedef TextStyle LinkStyleGetter(Node link);
+typedef String LinkSuffixGetter(Node link);
 
 const DEFAULT_LINK_STYLE = const TextStyle(
   decoration: TextDecoration.underline,
@@ -36,6 +37,7 @@ class Html extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.getLinkSuffix,
   }) : super(key: key);
 
   final String data;
@@ -48,6 +50,7 @@ class Html extends StatelessWidget {
   final bool useRichText;
   final ImageErrorListener onImageError;
   final LinkStyleGetter getLinkStyle;
+  final LinkSuffixGetter getLinkSuffix;
   final bool shrinkToFit;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
@@ -83,6 +86,7 @@ class Html extends StatelessWidget {
                 html: data,
                 onImageError: onImageError,
                 getLinkStyle: getLinkStyle,
+                getLinkSuffix: getLinkSuffix,
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,

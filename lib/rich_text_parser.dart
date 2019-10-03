@@ -301,6 +301,9 @@ class HtmlRichTextParser extends StatelessWidget {
     if (renderNewlines) {
       data = data.replaceAll("\n", "<br />");
     }
+
+    data = data.replaceAll('<p></p>', '<p> </p>');
+
     dom.Document document = parser.parse(data);
     dom.Node body = document.body;
 
@@ -882,14 +885,15 @@ class HtmlRichTextParser extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ));
             }
+
             BlockText blockText = BlockText(
               shrinkToFit: shrinkToFit,
               margin: node.localName != 'body'
                   ? _customEdgeInsets ??
                       EdgeInsets.only(
-                          top: 8.0, bottom: 8.0, left: parseContext.indentLevel * indentSize)
+                          top: 0, bottom: 0, left: parseContext.indentLevel * indentSize)
                   : EdgeInsets.zero,
-              padding: EdgeInsets.all(2.0),
+              padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
               decoration: decoration,
               child: RichText(
                 textAlign: textAlign,

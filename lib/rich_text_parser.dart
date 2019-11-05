@@ -364,7 +364,7 @@ class HtmlRichTextParser extends StatelessWidget {
       // empty strings of whitespace might be significant or not, condense it by default
       String finalText = node.text;
       if (parseContext.condenseWhitespace) {
-        finalText = condenseHtmlWhitespace(node.text);
+        // finalText = condenseHtmlWhitespace(node.text);
 
         // if this is part of a string of spans, we will preserve leading
         // and trailing whitespace unless the previous character is whitespace
